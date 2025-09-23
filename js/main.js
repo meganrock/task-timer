@@ -2,7 +2,7 @@ class Timer {
   constructor (name, taskID, overallTime) {
     this.isRunning = false;
     this.startTime = 0;
-    this.sessionOverallTime = 0;
+    this.sessionTime = 0;
     this.overallTime = overallTime;
     this.taskname = name;
     this.taskID = taskID;
@@ -25,9 +25,10 @@ class Timer {
 
   pause() {
     if (!this.isRunning) {
-      return console.error('Timer is already paused');
+      return console.error('Timer is not running');
     }
     this.isRunning = false;
+    this.sessionTime = this.sessionTime + this._getTimeElapsedSinceLastStart();
     this.overallTime = this.overallTime + this._getTimeElapsedSinceLastStart();
   }
   stop(){
@@ -35,9 +36,11 @@ class Timer {
       return console.error('Timer is already stopped');
     }
     this.isRunning = false;
+    this.sessionTime = 0;
     this.overallTime = this.overallTime + this._getTimeElapsedSinceLastStart();
   }
   reset () {
+    this.sessionTime = 0;
     this.overallTime = 0;
 
     if (this.isRunning) {
@@ -46,7 +49,7 @@ class Timer {
     }
     this.startTime = 0;
   }
-  getTime () {
+  getOverallTime () {
     if (!this.startTime) {
       return 0;
     }
@@ -56,13 +59,18 @@ class Timer {
     return this.overallTime;
   }
 
+  getSessionTime() {
+    if (!this.startTime) {
+      return 0;
+    }
+    if (this.isRunning) {
+      return this.sessionTime + this._getTimeElapsedSinceLastStart();
+    }
+    return this.sessionTime;
+  }
+
   
 }
-
-// for (let i = 0; i < 5; i++) {
-//   timers[i] = new Timer(`Task ${i + 1}`); // Create a new instance
-// }
-
 
 const timers = []; // Create an empty array to store instances
 timer_count = 0;
@@ -71,9 +79,7 @@ addButton.addEventListener('click', addTempTask);
 
 main = document.getElementById('main-content');
 
-
 populateTasks();
-
 
 function addTempTask(){
     
@@ -88,6 +94,7 @@ function addTempTask(){
             <span>This Session: 00:00:00</span>
             <span>Overall time on this task: 00:00:00</span>
             <span id="time"></span>
+            <button disabled>Delete Task</button>
           </div>
         </div>`)
       addButton.disabled = true;
@@ -122,9 +129,10 @@ function addTaskHTML(instance){
       <button id="stop-${instance.taskname}">Stop</button>
       <button id="reset-${instance.taskname}">Reset</button>
       <span>This Session:</span>
-      <span id="elapsed-${instance.taskname}">${instance.getTime()}</span>
+      <span id="elapsed-${instance.taskname}">${instance.sessionTime}</span>
       <span>Overall time on this task:</span>
       <span id="overall-${instance.taskname}">${instance.overallTime}</span>
+      <button id="delete-${instance.taskname}">Delete Task</button>
   </div>`);
   updateTimeDisplay(instance);
   updateOverallTime(instance);
@@ -138,7 +146,6 @@ document.getElementById("test").addEventListener('click', populateTasks);
 
 function populateTasks(){
     stored_timers = getFromLocalStorage();
-    console.log(stored_timers);
     timer_count = 0;
     for (const key in stored_timers) {
       if (stored_timers.hasOwnProperty(key)) {
@@ -174,19 +181,25 @@ function addButtonFunctions(instance){
   resetButton = document.getElementById(`reset-${instance.taskname}`)
   resetButton.addEventListener('click', function(){
     instance.reset();
+    updateOverallTime(instance);
+    setLocalStorage(instance);
+  })
+
+  deleteButton = document.getElementById(`delete-${instance.taskname}`)
+  deleteButton.addEventListener('click', function(){
+    localStorage.removeItem('timer-'+instance.taskname);
+    document.getElementById('main-content').innerHTML = "";
+    populateTasks();
   })
 }
 
 function updateTimeDisplay(instance){
-
-  const timeinSeconds = Math.round(instance.getTime() / 1000);
+  const timeinSeconds = Math.round(instance.getSessionTime()/ 1000);
   const timeinSecondsDisplay = timeinSeconds%60;
   const timeinMinutes = Math.floor(timeinSeconds / 60);
   const timeinHours = Math.round(timeinMinutes/60);
   document.getElementById(`elapsed-${instance.taskname}`).innerText = String(timeinMinutes).padStart(2, '0') + ' : ' + String(timeinSecondsDisplay).padStart(2, '0');
 
-
-  
 }
 
 function updateOverallTime(instance){
@@ -195,14 +208,9 @@ function updateOverallTime(instance){
     const timeinMinutes = Math.floor(timeinSeconds / 60);
     const timeinHours = Math.round(timeinMinutes/60);
     document.getElementById(`overall-${instance.taskname}`).innerText = String(timeinMinutes).padStart(2, '0') + ' : ' + String(timeinSecondsDisplay).padStart(2, '0');
-
 }
 
 function setLocalStorage(instance){
-  let instanceInfo = {
-    taskname: instance.taskname,
-    overallTime : instance.overallTime
-  };
   localStorage.setItem('timer-'+instance.taskname, JSON.stringify(instance));
 }
 
@@ -218,14 +226,15 @@ function getFromLocalStorage(){
         timers_in_storage[key] = value;
       }
     }
-    console.log(timers_in_storage);
     return timers_in_storage;
 }
 
 
 function updateAllTimerDisplays(){
   timers.forEach(timer => {
-    updateTimeDisplay(timer);
+    if (timer){
+      updateTimeDisplay(timer);
+    }
   })
 } 
 
