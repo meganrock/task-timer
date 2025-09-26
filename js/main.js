@@ -23,21 +23,14 @@ class Timer {
     this.startTime = Date.now();
   }
 
-  pause() {
-    if (!this.isRunning) {
-      return console.error('Timer is not running');
-    }
-    this.isRunning = false;
-    this.sessionTime = this.sessionTime + this._getTimeElapsedSinceLastStart();
-    this.overallTime = this.overallTime + this._getTimeElapsedSinceLastStart();
-  }
   stop(){
-    if (!this.isRunning) {
+    if (this.isRunning){
+      this.isRunning = false;
+      this.overallTime = this.overallTime + this._getTimeElapsedSinceLastStart();
+    }
+    else if (!this.isRunning) {
       return console.error('Timer is already stopped');
     }
-    this.isRunning = false;
-    this.sessionTime = 0;
-    this.overallTime = this.overallTime + this._getTimeElapsedSinceLastStart();
   }
   reset () {
     this.sessionTime = 0;
@@ -74,27 +67,25 @@ class Timer {
 
 const timers = []; // Create an empty array to store instances
 timer_count = 0;
-addButton = document.getElementById('add');
-addButton.addEventListener('click', addTempTask);
 
 main = document.getElementById('main-content');
+addButton = document.getElementById('add');
+addButton.addEventListener('click', addTempTask);
+taskList = document.getElementById('task-list')
 
 populateTasks();
+// addAddButton();
+
+
+
 
 function addTempTask(){
     
-    main.insertAdjacentHTML('beforeend', `   
+    taskList.insertAdjacentHTML('afterend', `   
         <div id="temp">
-          <div class="flexbox">
-            <input type="text" placeholder='Name this task to get started' name='task-name' id="task-name"></input>
-            <button disabled>Start</button>
-            <button disabled>Pause</button>
-            <button disabled>Stop</button>
-            <button disabled>Reset</button>
-            <span>This Session: 00:00:00</span>
-            <span>Overall time on this task: 00:00:00</span>
-            <span id="time"></span>
-            <button disabled>Delete Task</button>
+          <div class="flexbox task-row">
+            <div class="task-row-item task-name"><input type="text" placeholder='Name this task to get started' name='task-name' id="task-name"></input></div>
+            
           </div>
         </div>`)
       addButton.disabled = true;
@@ -112,9 +103,9 @@ function addNewTask(){
   taskname = taskNameInput.value;
   taskID = timer_count;
   timers[timer_count] = new Timer(taskname, taskID, 0);
-  addTaskHTML(timers[timer_count]);
+  timer_count += 1;  
+  addTaskHTML(timers[taskID]);
   addButton.disabled= false;
-  timer_count += 1;
 }
 
 function addTaskHTML(instance){
@@ -122,41 +113,81 @@ function addTaskHTML(instance){
   if (tempTask){
     tempTask.remove();   
   }
-  main.insertAdjacentHTML('beforeend', `<div class="flexbox">
-      <span>${instance.taskname}</span>
-      <button id="start-${instance.taskname}">Start</button>
-      <button id="pause-${instance.taskname}">Pause</button>
-      <button id="stop-${instance.taskname}">Stop</button>
-      <button id="reset-${instance.taskname}">Reset</button>
-      <span>This Session:</span>
-      <span id="elapsed-${instance.taskname}">${instance.sessionTime}</span>
-      <span>Overall time on this task:</span>
-      <span id="overall-${instance.taskname}">${instance.overallTime}</span>
-      <button id="delete-${instance.taskname}">Delete Task</button>
+  if (instance.taskID%3 == 0){
+    color_class='color-3';
+  } else if (instance.taskID%2 == 0){
+    color_class='color-2';
+  }else {
+    color_class = 'color-1';
+  }
+
+  taskList.insertAdjacentHTML('beforeend', `<div class="flexbox task-row ${color_class}">
+      <div class="task-row-item task-name"><span>${instance.taskname}</span></div>
+      <div class="task-row-item"><button id="start-${instance.taskname}">Start</button></div>
+      <div class="task-row-item"><button id="stop-${instance.taskname}">Stop</button></div>
+      <div class="time-block">
+        <div class="task-row-item"><span>This Session:</span></div>
+        <div class="task-row-item"><span id="elapsed-${instance.taskname}">${instance.sessionTime}</span></div>
+      </div>
+      <div class="time-block">
+        <div class="task-row-item"><span>Overall time on this task:</span></div>
+        <div class="task-row-item"><span id="overall-${instance.taskname}">${instance.overallTime}</span></div>
+      </div>
+      <div class="task-row-item"><button id="reset-${instance.taskname}">Reset</button></div>
+      <div class="task-row-item"><button id="delete-${instance.taskname}">&#x2715;</button></div>
   </div>`);
   updateTimeDisplay(instance);
   updateOverallTime(instance);
   addButtonFunctions(instance);
   setLocalStorage(instance);
+
 }
 
-addButton.insertAdjacentHTML('afterend', '<button id="test">Test!!</button>');
-document.getElementById("test").addEventListener('click', populateTasks);
 
+// function populateTasks(){
+//     stored_timers = getFromLocalStorage();    
+    
+//     for (const key in stored_timers) {
+//       if (stored_timers.hasOwnProperty(key)) {
+//         const value = JSON.parse(stored_timers[key]);
+//         console.log('key: ' +key);
+//         idNum = key.replace("timer-", "");
+//         timers[idNum] = new Timer(value.taskname, value.taskID, value.overallTime);
+        
+//         }
+//     }
+//     for (let i = 0; i < timers.length; i++){
+//     if (timers[i]) {
+//       addTaskHTML(timers[i]);
+//     }
+//   }       
+// }
 
 function populateTasks(){
-    stored_timers = getFromLocalStorage();
-    timer_count = 0;
+    stored_timers = getFromLocalStorage();    
+    let maxId = -1;
+    
     for (const key in stored_timers) {
       if (stored_timers.hasOwnProperty(key)) {
         const value = JSON.parse(stored_timers[key]);
-        timers[timer_count] = new Timer(value.taskname, value.taskID, value.overallTime);
-        addTaskHTML(timers[timer_count]);
-        timer_count += 1;
+        console.log('key: ' +key);
+        idNum = parseInt(key.replace("timer-", ""));
+        timers[idNum] = new Timer(value.taskname, value.taskID, value.overallTime);
+        maxId = Math.max(maxId, idNum);
       }
     }
-
+    
+    timer_count = maxId + 1; // Set to next available ID
+    
+    for (let i = 0; i < timers.length; i++){
+      if (timers[i]) {
+        addTaskHTML(timers[i]);
+      }
+    }
 }
+    
+    
+
 
 
 function addButtonFunctions(instance){
@@ -164,12 +195,6 @@ function addButtonFunctions(instance){
   startButton.addEventListener('click', function(){
     instance.start();
   });
-
-  pauseButton = document.getElementById(`pause-${instance.taskname}`)
-  pauseButton.addEventListener('click', function(){
-    instance.pause();
-    setLocalStorage(instance);
-  })
 
   stopButton = document.getElementById(`stop-${instance.taskname}`)
   stopButton.addEventListener('click', function(){
@@ -187,18 +212,19 @@ function addButtonFunctions(instance){
 
   deleteButton = document.getElementById(`delete-${instance.taskname}`)
   deleteButton.addEventListener('click', function(){
-    localStorage.removeItem('timer-'+instance.taskname);
-    document.getElementById('main-content').innerHTML = "";
+    localStorage.removeItem('timer-'+instance.taskID);
+    delete timers[instance.taskID]; 
+    document.getElementById('task-list').innerHTML = "";
     populateTasks();
   })
-}
+  }
 
 function updateTimeDisplay(instance){
   const timeinSeconds = Math.round(instance.getSessionTime()/ 1000);
   const timeinSecondsDisplay = timeinSeconds%60;
   const timeinMinutes = Math.floor(timeinSeconds / 60);
   const timeinHours = Math.round(timeinMinutes/60);
-  document.getElementById(`elapsed-${instance.taskname}`).innerText = String(timeinMinutes).padStart(2, '0') + ' : ' + String(timeinSecondsDisplay).padStart(2, '0');
+  document.getElementById(`elapsed-${instance.taskname}`).innerText = String(timeinHours).padStart(2, '0') + ' : ' + String(timeinMinutes).padStart(2, '0') + ' : ' + String(timeinSecondsDisplay).padStart(2, '0');
 
 }
 
@@ -206,12 +232,12 @@ function updateOverallTime(instance){
     const timeinSeconds = Math.round((instance.overallTime) / 1000);
     const timeinSecondsDisplay = timeinSeconds%60;
     const timeinMinutes = Math.floor(timeinSeconds / 60);
-    const timeinHours = Math.round(timeinMinutes/60);
-    document.getElementById(`overall-${instance.taskname}`).innerText = String(timeinMinutes).padStart(2, '0') + ' : ' + String(timeinSecondsDisplay).padStart(2, '0');
+    const timeinHours = Math.floor(timeinMinutes/60);
+    document.getElementById(`overall-${instance.taskname}`).innerText = String(timeinHours).padStart(2, '0') + ' : ' + String(timeinMinutes).padStart(2, '0') + ' : ' + String(timeinSecondsDisplay).padStart(2, '0');
 }
 
 function setLocalStorage(instance){
-  localStorage.setItem('timer-'+instance.taskname, JSON.stringify(instance));
+  localStorage.setItem('timer-'+instance.taskID, JSON.stringify(instance));
 }
 
 
@@ -222,10 +248,11 @@ function getFromLocalStorage(){
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key.includes('timer')) {
-        const value = localStorage.getItem(key);
+        let value = localStorage.getItem(key);
         timers_in_storage[key] = value;
       }
     }
+    console.log(timers_in_storage);
     return timers_in_storage;
 }
 

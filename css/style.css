@@ -17,19 +17,271 @@
 	clear: both;
 }
 
+/*
+yellow:
+#FFC145
+red:
+#FF6B6C
+*/ 
 /******************************************
 /* BASE STYLES
 /*******************************************/
 
+*{
+     color: #0f0f0f;
+     font-family: "Quicksand", sans-serif;
+     font-weight: 600;
+     font-style: normal;
+}
+
+body{
+     background-color: #f4f5f7;
+}
+
+h1, h2{
+     font-family: "Bebas Neue", sans-serif;
+     font-weight: 400;
+     font-style: normal;
+}
+
+h1{
+     font-size: 36px;
+     text-align: center;
+     color:#5B5F97;
+}
+
+span, button{
+     font-family: "Quicksand", sans-serif;
+}
+
+button{
+     width: 70px;
+     height: 50px;
+     border: none;
+     background-color: #5B5F97;
+     border-radius: 10px;
+     color: #d4d5ee;
+}
+
+button:disabled{
+     background-color: #a5a5ca;
+}
+
+header button{
+     width: 200px;
+}
+
+.flex-column{
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+}
+
+.flex-column * {
+     align-self: center;
+}
+
+.task-row-item input[type="text"]{
+     background-color: white;
+     border-radius: 5px;
+     width: 100%;
+     height: 50%;
+     text-align: center;
+}
 
 
 /******************************************
 /* LAYOUT
 /*******************************************/
 
+.flexbox{
+     display: flex;
+     flex-direction: row;
+}
+
+.task-row{
+     justify-content: space-around;
+     text-align: center;
+     width: 80vw;
+     border-radius: 10px;
+     margin: 15px auto;
+     
+     
+}
+
+.task-row-item{
+     color: #5B5F97;
+     height: 80px;
+     width: 10%;
+     text-align: center;
+     border-radius: 10px;
+     margin: 10px;
+     align-content: center;
+}
+
+.color-1{
+     background-color: #B8B8D1;
+     border: 2px solid #5B5F97;   
+     box-shadow: #262848 5px 5px 10px;
+}
+
+.color-1 button, #add{
+     color: #dedeee;
+     background-color: #5B5F97;   
+     background-image: linear-gradient(#5B5F97, #2f3150)  
+}
+
+.color-1 button:hover, #add:hover{
+     color: #dedeee;   
+     background-image: linear-gradient(#2f3150, #5B5F97)  
+}
+.color-1 .time-block{
+      border: 2px solid #5B5F97; 
+}
+
+
+.color-2{
+     background-color: #b8d1bb;
+     border: 2px solid #5b9767;   
+     box-shadow: #26482a 5px 5px 10px;
+}
+
+.color-2 button{
+     color: #d1dfd3;
+     background-color: #5b9767;   
+     background-image: linear-gradient(#5b9767, #436c4b)  
+}
+
+.color-2 button:hover{
+     color: #d1dfd3;
+     background-image: linear-gradient(#436c4b, #5b9767)
+}
+
+.color-2 .time-block{
+     border: 2px solid #5b9767;
+}
+
+.color-3{
+     background-color: #b8c8d1;
+     border: 2px solid #6597c9;   
+     box-shadow: #223150 5px 5px 10px;
+}
+
+.color-3 button{
+     color: #d9e8f0;
+     background-color: #6597c9;  
+     background-image: linear-gradient(#6597c9, #446485);
+}
+
+.color-3 button:hover{
+     color: #d9e8f0;
+     /* background-color: #6597c9;  */
+     background-image: linear-gradient(#446485, #6597c9) 
+}
+
+.color-3 .time-block{
+     border: 2px solid #6597c9;
+}
+
+/* 
+.color-4{
+     background-color: #ffeabf;
+     border: 2px solid #FFC145;   
+     box-shadow: #8b6415 5px 5px 10px;
+}
+
+.color-4 button{
+     color: #ffeabf;
+     background-color: #FFC145;   
+     background-image: linear-gradient(#FFC145, #7a5916)  
+}
+
+.color-4 button:hover{
+     color: #ffeabf;   
+     background-image: linear-gradient(#7a5916, #FFC145)  
+}
+.color-4 .time-block{
+      border: 2px solid #FFC145; 
+}
+
+.color-5{
+     background-color: #faa9a9;
+     border: 2px solid #FF6B6C;   
+     box-shadow: #4b0404 5px 5px 10px;
+}
+
+.color-5 button{
+     color: #ffd9d9;
+     background-color: #FF6B6C;   
+     background-image: linear-gradient(#FF6B6C, #7e1212)  
+}
+
+.color-5 button:hover{
+     color: #ffd9d9;   
+     background-image: linear-gradient(#7e1212, #FF6B6C)  
+}
+.color-5 .time-block{
+      border: 2px solid #FF6B6C; 
+} */
 
 
 
+div#temp .task-row{
+     /* justify-content: space-around; */
+     text-align: center;
+     /* width: 80vw; */
+     border-radius: 10px;
+     margin: 5px auto;
+     background-color: #c6c6c6;
+     border: 2px solid #585858;   
+     box-shadow: #999999 5px 5px 10px;
+}
+
+div#temp .task-row button{
+     background-color: #585858;
+     color: #c6c6c6;
+}
+
+.task-name{
+     width: 20%;
+}
+
+div#temp .task-name{
+     width: 60%
+}
+
+.time-block{
+     display: flex;
+     width: 35%;
+     border-radius: 10px;
+     border: 2px solid #5B5F97;
+     height: 50px;
+     margin: 10px;
+}
+
+.time-block * {
+     width: 100%;
+}
+
+[id*=delete]{
+     width: 50px;
+     height: 50px;
+}
+
+[id*=elapsed], [id*=overall] {
+     font-size: 20px;
+}
+
+
+
+#add{
+     width: 200px;
+     margin-top: 20px;
+}
+
+#buffer{
+     height: 150px;
+}
 /******************************************
 /* ADDITIONAL STYLES
 /*******************************************/

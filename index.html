@@ -10,15 +10,24 @@
 		<!-- external CSS link -->
 		<link rel="stylesheet" href="css/normalize.css">
 		<link rel="stylesheet" href="css/style.css">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
 	</head>
 	<body>
-		<header>
+		<header class="flex-column">
 			<h1>Task Timer</h1>
-			<button id="add">add a task</button>
+			
 		</header>
-		<main id="main-content">
 
+		<main id="main-content" class="flex-column">
+			<section id="task-list">
+
+			</section>
+			<button id="add">add a task</button>
+			<div id="buffer"></div>
 		</main>
+			
 		<!-- <div class="flexbox">
 			<input type="text"></input>
 			<button id="start">Start</button>
